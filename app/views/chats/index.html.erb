@@ -1,0 +1,32 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Chats</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Sender</th>
+      <th>Receiver</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @chats.each do |chat| %>
+      <tr>
+        <td><%= chat[:title] %></td>
+        <% @chats.each do |c| %>
+          <td><%= c[:sender_email] %></td>
+          <td><%= c[:receiver_id] %></td>
+        <% end %>
+        <td><%= link_to 'Show', chat_path(chat) %></td>
+        <td><%= link_to 'Edit', edit_chat_path(chat) %></td>
+        <td><%= link_to 'Destroy', chat, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+<%= link_to 'New Chat', new_chat_path %>
