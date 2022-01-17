@@ -9,8 +9,7 @@ import * as ActiveStorage from "@rails/activestorage"
 import "channels"
 import "bootstrap"
 import "popper.js"
-import "../stylesheets/application"
 
-Rails.start()
-Turbolinks.start()
-ActiveStorage.start()
+//* require action_cable
+//* require_self
+//* require_tree ./channels

@@ -4,7 +4,10 @@
   <strong>Title:</strong>
   <%= @chat.title %>
 </p>
-<%= render 'show_messages'%>
+<div>
+  <%#= @message.content %>
+  <%= render partial: 'show_messages', locals: {message: @message}%>
+</div>
 
 <%= link_to 'Edit', edit_chat_path(@chat) %> |
 <%= link_to 'Back', chats_path %>

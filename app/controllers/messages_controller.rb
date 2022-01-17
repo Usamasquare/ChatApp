@@ -1,11 +1,15 @@
 class MessagesController < ApplicationController
+  skip_before_action :verify_authenticity_token
   before_action :set_message, only: %i[ update ]
 
-
   def create
-    @message = message.new(message_params)
-    @message.sender_id = current_user.id
-    @message.receiver_id = current_user.id
+    @message = Message.new(message_params)
+    @message.user_id = current_user.id
+    @message.chat_id = params[:chat_id]
+    # ActionCable.server.broadcast 'ChatChannel', {
+    #   message: @message.content
+    # }
+    @message.save
   end
 
   def update

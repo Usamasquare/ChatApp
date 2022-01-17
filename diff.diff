@@ -1,0 +1,80 @@
+diff --git a/app/javascript/packs/application.js b/app/javascript/packs/application.js
+index 3bf3b56..52c0da0 100644
+--- a/app/javascript/packs/application.js
++++ b/app/javascript/packs/application.js
+@@ -9,8 +9,20 @@ import * as ActiveStorage from "@rails/activestorage"
+ import "channels"
+ import "bootstrap"
+ import "popper.js"
+-import "../stylesheets/application"
+ 
+ Rails.start()
+ Turbolinks.start()
+ ActiveStorage.start()
++
++//* require action_cable
++//* require_self
++//* require_tree ./channels
++
++(function() {
++  this.App || (this.App = {});
++
++  App.cable = ActionCable.createConsumer($('meta[name=action-cable-url]').attr('content'));
++
++
++}).call(this);
++
+diff --git a/app/models/message.rb b/app/models/message.rb
+index 368b4ef..83aaf79 100644
+--- a/app/models/message.rb
++++ b/app/models/message.rb
+@@ -1,4 +1,9 @@
+ class Message < ApplicationRecord
+   belongs_to :user
+   belongs_to :chat
++
++  after_create_commit {
++    MessageBroadcastJob.perform_later(self)
++  }
++
+ end
+diff --git a/app/views/chats/show.html.erb b/app/views/chats/show.html.erb
+index 07e3332..251f346 100644
+--- a/app/views/chats/show.html.erb
++++ b/app/views/chats/show.html.erb
+@@ -4,7 +4,9 @@
+   <strong>Title:</strong>
+   <%= @chat.title %>
+ </p>
+-<%= render 'show_messages'%>
++<div id="chatbox">
++  <%= render 'show_messages'%>
++</div>
+ 
+ <%= link_to 'Edit', edit_chat_path(@chat) %> |
+ <%= link_to 'Back', chats_path %>
+diff --git a/app/views/layouts/application.html.erb b/app/views/layouts/application.html.erb
+index 2845102..0f9122f 100644
+--- a/app/views/layouts/application.html.erb
++++ b/app/views/layouts/application.html.erb
+@@ -5,6 +5,8 @@
+     <meta name="viewport" content="width=device-width,initial-scale=1">
+     <%= csrf_meta_tags %>
+     <%= csp_meta_tag %>
++    <%= action_cable_meta_tag %>
++
+ 
+     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+     <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+diff --git a/config/environments/development.rb b/config/environments/development.rb
+index 16f5688..9db9ff5 100644
+--- a/config/environments/development.rb
++++ b/config/environments/development.rb
+@@ -7,6 +7,7 @@ Rails.application.configure do
+   # it changes. This slows down response time but is perfect for development
+   # since you don't have to restart the web server when you make code changes.
+   config.cache_classes = false
++  config.action_cable.mount_path = "/cable"
+ 
+   # Do not eager load code on boot.
+   config.eager_load = false

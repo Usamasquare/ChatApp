@@ -9,9 +9,11 @@ class ChatsController < ApplicationController
 
   # GET /chats/1 or /chats/1.json
   def show
-    @message = Message.new
-    @message.update(user_id: current_user.id, chat_id: @chat.id)
-    @message.save
+    @message = Message.new(chat_id: @chat.id)
+    # @message.update(content: 'hello123', user_id: current_user.id, chat_id: @chat.id)
+    #   ActionCable.server.broadcast 'ChatChannel', {
+    #     message: @message.content
+    #   }
     # ActiveModelSerializers::SerializableResource.new(@chat).as_json
   end
 
